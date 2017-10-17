@@ -1,5 +1,5 @@
-# sambal
-[![NPM](https://img.shields.io/npm/v/sambal.svg)](https://www.npmjs.org/package/sambal)
+# pepperx
+[![NPM](https://img.shields.io/npm/v/pepperx.svg)](https://www.npmjs.org/package/pepperx)
 
 A peppering key-derivation protocol,  with a bundled Javascript implementation.
 
