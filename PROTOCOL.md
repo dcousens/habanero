@@ -1,7 +1,7 @@
 # sambal
 
 ### Assumptions
-This protocol assumes TLS, for authentication, encryption and the prevention of replay attacks.
+This protocol assumes TLS for authentication, encryption and the prevention of replay attacks.
 
 ### Setup
 On the Server
