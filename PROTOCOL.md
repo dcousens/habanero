@@ -80,6 +80,7 @@ The Client discards $P$, $K_{pepper}$ and $kek$.
 #### Rationale
 $I_{attempts}$ is revealed to the Client to enable expectation matching (notification of "N password attempt(s)").
 In typical application usage, $d$ is never shared; therefore a mismatch of expectations is synonymous with a notification of compromise for the local device.
+$I_{attempts}$ values should be indexed by $H(I)$, where $H$ is a cryptographic hash function, to prevent any timing attacks that may reveal indexed $I$ values.
 
 
 ## Attack Vectors
