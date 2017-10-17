@@ -3,6 +3,8 @@
 ### Assumptions
 This protocol assumes TLS for authentication, encryption and the prevention of replay attacks.
 
+## Methods
+
 ### Setup
 On the Server
 1. Select a random 32-byte sequence $e$
@@ -80,10 +82,10 @@ $I_{attempts}$ is revealed to the Client to enable expectation matching (notific
 In typical application usage, $d$ is never shared; therefore a mismatch of expectations is synonymous with a notification of compromise for the local device.
 
 
-## Attacks
+## Attack Vectors
 Although this protocol assumes TLS,  transport layer attacks are still explored below.
 
-##### Attack 1 - Transport compromise - Notarization
+#### 1. Transport compromise (Notarization)
 > An Attacker captures $P$
 
 The Attacker cannot replay $P$ idempotently, as $K_{pepper}$ is derived from $I$, which is different each time.
@@ -93,7 +95,7 @@ The Attacker cannot replay $P$ idempotently, as $K_{pepper}$ is derived from $I$
 The Attacker can execute a denial-of-service attack via attempting (and failing) $K_{pepper}$ retrieval.
 
 
-##### Attack 2 - Transport compromise - Retrieval
+#### 2. Transport compromise (Retrieval)
 > An Attacker captures $I \parallel P \parallel K_{verify}$
 
 If $P$ is notarized with $K_{verify}$, the Attacker can replay Retrieval to reveal $K_{pepper}$.
@@ -106,7 +108,7 @@ This denial-of-service could be reset by external validation of the Clients iden
 To prevent brute-force by social engineering, a $I_{attempts}$ value should never be reset twice.
 
 
-##### Attack 3 - Local compromise
+#### 3. Local compromise
 > An Attacker compromises $d$, $I$ and $K_{verify}$
 
 If $d$ is compromised, $K_{pepper}$ cannot be retrieved without $pin$, providing the Attacker $I_{attempts}$ to guess $pin$ before denial of service.
@@ -116,7 +118,7 @@ The Attacker could then wait until the Client successfully retrieves a $K_{peppe
 This attack is ideally mitigated by a notification to the User of the mismatch in expectations for the $I_{attempts}$ value.
 
 
-##### Attack 4 - Local compromise and transport compromise
+#### 4. Local compromise and transport compromise
 > An Attacker compromises $d$, $I$, $K_{verify}$, and ($P$ or $K_{pepper}$)
 
 This is a catastrophic compromise.
@@ -126,7 +128,7 @@ If an Attacker has $d$ and $K_{pepper}$, $kek$ can be derived.
 If an Attacker has $d$, $I$, $K_{verify}$ and $P$, $pin$ can be trivially brute-forced off-line, $K_{pepper}$ retrieved, and then $kek$ derived.
 
 
-##### Attack 5 - Server compromise
+#### 5. Server compromise
 > An Attacker compromises $e$ or the $I_{attempts}$ database
 
 If an Attacker has $e$, any existing or subsequent local compromise can now be assumed as catastrophic.
@@ -134,7 +136,7 @@ If an Attacker has $e$, any existing or subsequent local compromise can now be a
 With database compromise, $I_{attempts}$ can be assumed as $0$ for any retrieval, enabling online brute-forcing of $pin$.
 
 
-##### Attack 6 - Server and local compromise
+#### 6. Server and local compromise
 > An Attacker compromises $d$, $I$, $K_{verify}$, and $e$
 
 This is a catastrophic compromise.
