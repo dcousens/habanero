@@ -83,7 +83,7 @@ In typical application usage, $d$ is never shared; therefore a mismatch of expec
 
 $I_{attempts}$ values should be indexed by $H(I)$, where $H$ is a cryptographic hash function, to prevent any timing attacks that may reveal indexed $I$ values.
 
-[Limit I](######Limit_I) is to be enforced __before__ [Verify P](######Verify_P),  otherwise Denial timings can be used as an oracle for $Kverify$ authenticity.
+[Limit I](######Limit_I) is to be enforced __before__ [Verify P](######Verify_P),  otherwise Denial timings can be used as an oracle for $K_{verify}$ authenticity.
 
 
 ## Attack Vectors

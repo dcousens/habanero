@@ -1,6 +1,6 @@
 {
   "name": "habanero",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "A peppering key-derivation protocol and implementation.",
   "main": "index.js",
   "scripts": {
