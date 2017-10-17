@@ -1,4 +1,4 @@
-# pepperx
+# habanero
 
 ### Assumptions
 This protocol assumes TLS for authentication, encryption and the prevention of replay attacks.
