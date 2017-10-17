@@ -19,8 +19,8 @@ On a Client (or Attacking) device
 On the Server
 1. Select a random 32-byte sequence $I$
 1. $K = HMAC_{SHA512}(Key=e, Data=I \parallel P)$
-1. Split $K$ into two 32-byte sequences $K_{pepper}$ and $K_{verify}$
-1. Send $I \parallel K_{pepper} \parallel K_{verify}$ to the Client
+1. Split $K$ into two 32-byte sequences $K_{verify}$ and $K_{pepper}$
+1. Send $\{I \mid K_{verify} \mid K_{pepper}\}$ to the Client
 
 The Client can then derive a key-encryption-key:
 
@@ -51,7 +51,7 @@ $kek$ is derived from $d \parallel K_{pepper}$ to prevent a weak $K_{pepper}$ va
 On a Client (or Attacking) device
 1. Select a $pin$, where $pin \in \{x \in \Bbb Z \mid 0 \le x \le 9999\}$
 1. $P = HMAC_{SHA256}(Key=d, Data=pin)$
-1. Send $I \parallel P \parallel K_{verify}$ to the Server
+1. Send $\{I \mid K_{verify} \mid P\}$ to the Server
 
 On the Server
 
@@ -63,6 +63,7 @@ On the Server
 1. Split $K'$ into two 32-byte sequences $K'_{pepper}$ and $K'_{verify}$
 1. If $K'_{verify} \ne K_{verify}$, go to [Denial](######Denial)
 1. Send $K'_{pepper}$ and $I_{attempts}$ to Client
+1. Send $\{K'_{pepper} \mid I_{attempts}\}$ to the Client
 1. Reset $I_{attempts}$ to $0$, skip [Denial](######Denial)
 
 ###### Denial
@@ -94,13 +95,13 @@ Although this protocol assumes TLS,  transport layer attacks are still explored 
 
 The Attacker cannot replay $P$ idempotently, as $K_{pepper}$ is derived from $I$, which is different each time.
 
-> An Attacker captures $I \parallel K_{pepper} \parallel K_{verify}$
+> An Attacker captures $I$, $K_{verify}$ and $K_{pepper}$
 
 The Attacker can execute a denial-of-service attack via attempting (and failing) $K_{pepper}$ retrieval.
 
 
 #### 2. Transport compromise (Retrieval)
-> An Attacker captures $I \parallel P \parallel K_{verify}$
+> An Attacker captures $I$, $P$ and $K_{verify}$
 
 If $P$ is notarized with $K_{verify}$, the Attacker can replay Retrieval to reveal $K_{pepper}$.
 
