@@ -37,12 +37,12 @@ $P$ is transmitted instead of $pin$ to prevent the Server from knowing $pin$.
 
 $I$ is a cryptographically random 256-bit identifier for authentication and attempt-limiting.
 $I$ is not provided by the Client to prevent Notarization from acting as a method of $K_{pepper}$ retrieval.
-$I$ is not derived from $P$ to prevent $I$ from acting as a cryptographic oracle enabling the trivial brute-force of $pin$.
+$I$ is not derived from $P$ to prevent $I$ from acting as a cryptographic oracle enabling the online brute-force of $pin$.
 
 $K_{verify}$ is a hash commitment to $I \parallel P$ by the Server, for $P$ verification on $K_{pepper}$ retrieval.
 $K_{verify}$ additionally removes the requirement for a Server-side registry of sanctioned $I$ values.
 
-$kek$ is derived from $d \parallel K_{pepper}$ to prevent a weak $K_{pepper}$ value enabling $pin$ to be trivially brute-forced.
+$kek$ is derived from $d \parallel K_{pepper}$ to prevent a weak $K_{pepper}$ value enabling $pin$ to be trivially brute-forced off-line.
 
 
 ### Retrieval of $K_{pepper}$
@@ -112,7 +112,7 @@ To prevent brute-force by social engineering, a $I_{attempts}$ value should neve
 If $d$ is compromised, $K_{pepper}$ cannot be retrieved without $pin$, providing the Attacker $I_{attempts}$ to guess $pin$ before denial of service.
 
 An Attacker could strategically limit themselves to $<5$ attempts, leaving the remaining attempts for the actual User.
-The Attacker could then wait until the Client successfully retrieves a $K_{pepper}$, resetting $I_{attempts}$, enabling the Attacker to continue brute-forcing.
+The Attacker could then wait until the Client successfully retrieves a $K_{pepper}$, resetting $I_{attempts}$, enabling the Attacker to continue brute-forcing online.
 This attack is ideally mitigated by a notification to the User of the mismatch in expectations for the $I_{attempts}$ value.
 
 
@@ -123,7 +123,7 @@ This is a catastrophic compromise.
 
 If an Attacker has $d$ and $K_{pepper}$, $kek$ can be derived.
 
-If an Attacker has $d$, $I$, $K_{verify}$ and $P$, $pin$ can be trivially brute-forced, $K_{pepper}$ retrieved, and then $kek$ derived.
+If an Attacker has $d$, $I$, $K_{verify}$ and $P$, $pin$ can be trivially brute-forced off-line, $K_{pepper}$ retrieved, and then $kek$ derived.
 
 
 ##### Attack 5 - Server compromise
@@ -131,7 +131,7 @@ If an Attacker has $d$, $I$, $K_{verify}$ and $P$, $pin$ can be trivially brute-
 
 If an Attacker has $e$, any existing or subsequent local compromise can now be assumed as catastrophic.
 
-With database compromise, $I_{attempts}$ can be assumed as $0$ for any retrieval, enabling trivial brute-force of $pin$.
+With database compromise, $I_{attempts}$ can be assumed as $0$ for any retrieval, enabling online brute-forcing of $pin$.
 
 
 ##### Attack 6 - Server and local compromise
@@ -139,7 +139,7 @@ With database compromise, $I_{attempts}$ can be assumed as $0$ for any retrieval
 
 This is a catastrophic compromise.
 
-$pin$ can be trivially brute-forced, $K_{pepper}$ derived, and then $kek$ derived.
+$pin$ can be trivially brute-forced off-line, $K_{pepper}$ derived, and then $kek$ derived.
 
 
 ### Conclusions
