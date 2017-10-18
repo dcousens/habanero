@@ -18,19 +18,20 @@ function notarize (e, P) {
   return deriveCommitment(e, I, P)
 }
 
-function respond (e, _commitment, P, queryCb, banCb, callback) {
+function respond (e, _commitment, P, queryCb, banCb, callback, limit) {
   if (!crypto.isBufferN(e, 32)) throw new TypeError('Bad secret')
   if (!crypto.isBufferN(_commitment, 64)) throw new TypeError('Bad commitment')
   if (!crypto.isBufferN(P, 32)) throw new TypeError('Bad hash')
+  limit = limit || 5
 
   let I = _commitment.slice(0, 32)
 
   queryCb(I, (err, attempts) => {
     if (err) return callback(err)
-    if (attempts > 5) return callback()
+    if (attempts > limit) return callback()
 
     let { commitment, pepper } = deriveCommitment(e, I, P)
-    if (!commitment.equals(_commitment)) return banCb(I, callback)
+    if (!commitment.equals(_commitment)) return banCb(I, attempts + 1, callback)
 
     callback(null, { attempts, pepper })
   })
