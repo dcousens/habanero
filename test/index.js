@@ -17,7 +17,11 @@ function memdb () {
   }
   function limit (I, limit, callback) {
     let Ih = _h(I)
-    memory[Ih] = limit
+    if (limit === 0) {
+      delete memory[Ih]
+    } else {
+      memory[Ih] = limit
+    }
     callback()
   }
   function _count () { return Object.keys(memory).length }
@@ -83,6 +87,41 @@ tape.test('protocol limits attackers', (t) => {
     t.equal(db._count(), 1)
     t.equal(db._limitOf(I), 6)
     t.notOk(result)
+    t.end()
+  })
+})
+
+tape.test('protocol limits attackers, but resets on success', (t) => {
+  let db = memdb()
+  let e = randombytes(32)
+  let seed = randombytes(32)
+
+  // notarization
+  let P = user.prepare(seed, '1234')
+  let { commitment, pepper: pepper1 } = server.notarize(e, P)
+
+  // attack
+  let I = commitment.slice(0, 32)
+  let aP = user.prepare(seed, '0099') // attacker
+  t.equal(db._count(), 0)
+  t.equal(db._limitOf(I), undefined)
+  server.respond(e, commitment, aP, db.query, db.limit, () => {})
+  server.respond(e, commitment, aP, db.query, db.limit, () => {})
+  server.respond(e, commitment, aP, db.query, db.limit, () => {})
+  server.respond(e, commitment, aP, db.query, db.limit, () => {})
+  server.respond(e, commitment, aP, db.query, db.limit, () => {})
+  t.equal(db._count(I), 1)
+  t.equal(db._limitOf(I), 5)
+
+  // !(attempts > 5), therefore valid commitment resets
+  server.respond(e, commitment, P, db.query, db.limit, (err, result) => {
+    t.ifErr(err)
+    t.equal(db._count(), 0)
+    t.equal(db._limitOf(I), undefined)
+    t.same(result, {
+      attempts: 5,
+      pepper: pepper1
+    })
     t.end()
   })
 })
