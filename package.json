@@ -4,7 +4,7 @@
   "description": "A peppering key-derivation protocol and implementation.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tape test/*.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/dcousens/habanero/issues"
   },
-  "homepage": "https://github.com/dcousens/habanero#readme"
+  "homepage": "https://github.com/dcousens/habanero#readme",
+  "devDependencies": {
+    "tape": "^4.8.0"
+  },
+  "dependencies": {
+    "create-hmac": "^1.1.6",
+    "randombytes": "^2.0.5"
+  }
 }
