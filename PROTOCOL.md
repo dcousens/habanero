@@ -72,7 +72,7 @@ On a Client (or Attacking) device
 On the Server
 
 ###### Limit I
-1. If $I \in {attempts}$, and $I_{attempts} \gt 5$, reject
+1. If $I \in attempted$, and $I_{attempts} \gt 5$, reject
 
 ###### Verify P
 1. $K' = HMAC_{SHA512}(Key=e, Data=I \parallel P)$
@@ -83,7 +83,7 @@ On the Server
 1. Reset $I_{attempts}$ to $0$, skip [Denial](######Denial)
 
 ###### Denial
-1. Record $I_{attempts}$ as $I_{attempts} + 1$ in $attempts$, reject
+1. Record $I_{attempts}$ as $I_{attempts} + 1$ in $attempted$, reject
 
 The Client can then derive a key-encryption-key:
 
