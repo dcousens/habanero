@@ -102,6 +102,11 @@ $I_{attempts}$ values should be indexed by $H(I)$, where $H$ is a cryptographic 
 
 [Limit I](######Limit_I) is to be enforced __before__ [Verify P](######Verify_P), otherwise Denial timings can be used as an oracle for $K_{verify}$ authenticity.
 
+The $I_{attempts}$ limit of $5$ was selected as it provides an approximate ~$0.05\%$ probability of success for an Attacker when using a 4-digit $pin$.
+
+However, if $pin$ distribution is not uniform, [DataGenetics](http://www.datagenetics.com/blog/september32012/) shows that $20.552\%$ of $pin$ codes are typically guessed in 5 attempts.
+The enforcement of whether a $pin$ is randomly selected is a UX consideration, and ignored in this protocol.
+
 
 ## Attack Vectors
 Although this protocol assumes TLS, transport layer attacks are still explored below.
@@ -174,9 +179,3 @@ If the Client is compromised, the Client has approximately a $0.05\%$ probabilit
 Although compromised, the Client could safely copy $d$, $K_{verify}$ and then re-enter $pin$ on a non-compromised device, if necessary. Re-notarization is strongly recommended in this event.
 
 If the Server is compromised, the Client cannot suffer a catastrophic decryption without local compromise.
-
-
-## Appendix
-$5$ is chosen as the upper limit of $I_{attempts}$ as it provides approximately a ~$0.05\%$ probability of random success by an attacker.
-However [DataGenetics](http://www.datagenetics.com/blog/september32012/) shows that $20.552\%$ of $pin$ codes can be found within 5 attempts.
-Whether uniform $pin$ distribution is enforced is a UX consideration, and ignored in this draft.
