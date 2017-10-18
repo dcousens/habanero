@@ -2,8 +2,13 @@
 
 ## Summary
 Habanero is a an attempt-limiting, remote pepper provisioning protocol for users who want to limit the amount of explorable key-space by an attacker.
-For example,  if a user has encrypted Bitcoin on his Laptop,  and his Laptop is compromised,  the Attacker would be limited to attempting up to 5 guesses before being remotely 'locked out' from decrypting the file.
-This is achieved by producing a deterministic pepper value for each attempt, retrieved remotely from a 3rd party whom you trust to safely track the number of attempts tried.
+For example,  if a user has encrypted Bitcoin on their Laptop,  and their Laptop is compromised,  the Attacker would be limited to attempting up to 5 decryption-key guesses before being remotely 'locked out' from decrypting the file.
+
+This is achieved by producing a deterministic pepper value for each password attempt, retrieved remotely from a 3rd party whom you trust to safely track the number of attempts tried.
+
+For a low-entropy passphrase,  e.g a 4 digit PIN,  this can be highly effective to minimizing the risk of catastrophic decryption by an Attacker down to 0.05% for a limit of 5 guesses.
+Increasing the entropy of the passphrase directly decreases the probability of catastrophic decryption,  and if supported by the 3rd party,  could support the User being able to track any failed password attempts against their data.
+
 
 ### Assumptions
 This protocol assumes TLS for authentication, encryption and the prevention of replay attacks.
