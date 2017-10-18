@@ -1,13 +1,19 @@
 # habanero
+Habanero is an attempt-limiting, remote pepper provisioning protocol for users who want to limit the amount of explorable key space by an Attacker.
 
 ## Summary
-Habanero is a an attempt-limiting, remote pepper provisioning protocol for users who want to limit the amount of explorable key-space by an attacker.
-For example,  if a user has encrypted Bitcoin on their Laptop,  and their Laptop is compromised,  the Attacker would be limited to attempting up to 5 decryption-key guesses before being remotely 'locked out' from decrypting the file.
+If a User has encrypted Bitcoin on their Laptop, and their Laptop is compromised, typically an Attacker could copy the encrypted data and begin a brute-force attack against the Users passphrase.
+Typically this is partially mitigated by either a high-entropy passphrase, or a cryptographic key-deriviation-function (KDF) with a high work-factor.
 
-This is achieved by producing a deterministic pepper value for each password attempt, retrieved remotely from a 3rd party whom you trust to safely track the number of attempts tried.
+For typical Users whom might use low-entropy passphrases, the result is near-immediate decryption of their encrypted data and catastrophic loss of their Bitcoin.
 
-For a low-entropy passphrase,  e.g a 4 digit PIN,  this can be highly effective to minimizing the risk of catastrophic decryption by an Attacker down to 0.05% for a limit of 5 guesses.
-Increasing the entropy of the passphrase directly decreases the probability of catastrophic decryption,  and if supported by the 3rd party,  could support the User being able to track any failed password attempts against their data.
+With Habanero, an Attacker would instead be limited to trying only 5 passphrase guesses before being remotely 'locked out' of decrypting the file.
+
+Habanero uses a deterministic [cryptographic pepper](https://en.wikipedia.org/wiki/Pepper_(cryptography)) for each passphrase, retrieved remotely from a 3rd party whom you trust to safely track the number of attempts tried.
+The 3rd party does *not* need to maintain a 'registry' of Users, and can maintain minimal operating state beyond the memory required for attempt-limiting the Attackers.
+
+For a low-entropy passphrase, such as a 4 digit PIN, this can be a highly effective method of minimizing the risk of catastrophic decryption by an Attacker,  with a decryption probability of only 0.05% (using a limit of maximum 5 guesses).
+Increasing the entropy of the passphrase directly decreases the probability of catastrophic decryption, and if supported by the 3rd party, could support the User being able to track any failed passphrase attempts against their data.
 
 
 ### Assumptions
@@ -89,16 +95,16 @@ The Client discards $P$, $K_{pepper}$ and $kek$.
 
 
 #### Rationale
-$I_{attempts}$ is revealed to the Client to enable expectation matching (notification of "N password attempt(s)").
+$I_{attempts}$ is revealed to the Client to enable expectation matching (notification of "N passphrase attempt(s)").
 In typical application usage, $d$ is never shared; therefore a mismatch of expectations is synonymous with a notification of compromise for the local device.
 
 $I_{attempts}$ values should be indexed by $H(I)$, where $H$ is a cryptographic hash function, to prevent any timing attacks that may reveal indexed $I$ values.
 
-[Limit I](######Limit_I) is to be enforced __before__ [Verify P](######Verify_P),  otherwise Denial timings can be used as an oracle for $K_{verify}$ authenticity.
+[Limit I](######Limit_I) is to be enforced __before__ [Verify P](######Verify_P), otherwise Denial timings can be used as an oracle for $K_{verify}$ authenticity.
 
 
 ## Attack Vectors
-Although this protocol assumes TLS,  transport layer attacks are still explored below.
+Although this protocol assumes TLS, transport layer attacks are still explored below.
 
 #### 1. Transport compromise (Notarization)
 > An Attacker captures $P$
