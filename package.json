@@ -4,7 +4,9 @@
   "description": "An attempt-limiting, pepper protocol with a bundled Javascript implementation.",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/*.js"
+    "standard": "standard",
+    "test": "npm run unit && npm run standard",
+    "unit": "tape test/*.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,7 @@
   },
   "homepage": "https://github.com/dcousens/habanero#readme",
   "devDependencies": {
+    "standard": "^10.0.3",
     "tape": "^4.8.0"
   },
   "dependencies": {
