@@ -1,6 +1,6 @@
 {
   "name": "habanero",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An attempt-limiting, pepper protocol with a bundled Javascript implementation.",
   "main": "index.js",
   "scripts": {
