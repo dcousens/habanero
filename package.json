@@ -1,7 +1,7 @@
 {
   "name": "habanero",
   "version": "0.0.3",
-  "description": "A peppering key-derivation protocol and implementation.",
+  "description": "An attempt-limiting, pepper protocol with a bundled Javascript implementation.",
   "main": "index.js",
   "scripts": {
     "test": "tape test/*.js"
