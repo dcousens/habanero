@@ -178,5 +178,5 @@ If the Server is compromised, the Client cannot suffer a catastrophic decryption
 
 ## Appendix
 $5$ is chosen as the upper limit of $I_{attempts}$ as it provides approximately a ~$0.05\%$ probability of random success by an attacker.
-However [DataGenetics](http://www.datagenetics.com/blog/september32012/) shows us that $20.552\%$ of $pin$ codes can be found within 5 attempts.
+However [DataGenetics](http://www.datagenetics.com/blog/september32012/) shows that $20.552\%$ of $pin$ codes can be found within 5 attempts.
 Whether uniform $pin$ distribution is enforced is a UX consideration, and ignored in this draft.
