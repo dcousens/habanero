@@ -13,7 +13,9 @@ Habanero uses a deterministic [cryptographic pepper](https://en.wikipedia.org/wi
 The 3rd party does *not* need to maintain a 'registry' of Users, and can maintain minimal operating state of only the failed attempts.
 
 For a low-entropy passphrase, such as a 4 digit PIN, this can be a highly effective method of minimizing the risk of catastrophic decryption by an Attacker,  with a decryption probability of only 0.05% (using a limit of maximum 5 guesses).
-Increasing the entropy of the passphrase directly decreases the probability of catastrophic decryption, and if supported by the 3rd party, could support the User being able to track any failed passphrase attempts against their data.
+Increasing the entropy of the passphrase directly decreases the probability of catastrophic decryption.
+
+By tracking the number of failed attempts, a 3rd party can additionally support the reporting of failed passphrase attempts to the User as a canary for a potential compromise.
 
 
 ### Assumptions
