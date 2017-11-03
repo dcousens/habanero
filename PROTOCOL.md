@@ -62,7 +62,7 @@ $I$ is not derived from $P$ to prevent $I$ from acting as a cryptographic oracle
 $K_{verify}$ is a hash commitment to $I \parallel P$ by the Server, for $P$ verification on $K_{pepper}$ retrieval.
 $K_{verify}$ additionally removes the requirement for a Server-side registry of sanctioned $I$ values.
 
-$kek$ is derived from $d \parallel K_{pepper}$ to prevent a weak $K_{pepper}$ value enabling $pin$ to be trivially brute-forced off-line.
+$kek$ should use $d$ as a salt, combined with $K_{pepper}$ to prevent a weak $K_{pepper}$ value that could enable $pin$ to be trivially brute-forced off-line.
 
 
 ### Retrieval of $K_{pepper}$
