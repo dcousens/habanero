@@ -10,7 +10,7 @@ function prepare (seed, passcode) {
   return crypto.hmac256(seed, passcode)
 }
 
-// XXX: near zero work-factor, suitable for low power devices, assumes cryptographically random seed/pepper
+// XXX: near zero work-factor, assumes cryptographically random seed and pepper
 function kdf (seed, pepper, passcode) {
   if (!crypto.isBufferN(seed, 32)) throw new TypeError('Bad seed')
   if (!crypto.isBufferN(pepper, 32)) throw new TypeError('Bad pepper')
