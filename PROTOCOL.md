@@ -41,7 +41,7 @@ On the Server
 The Client can then derive a key-encryption-key:
 
 $$
-kek = HKDF(Salt=d \parallel K_{pepper}, Data=pin)
+kek = KDF(Salt=d \parallel K_{pepper}, Data=pin)
 $$
 
 The Client discards $P$, $K_{pepper}$ and $kek$.
@@ -88,7 +88,7 @@ On the Server
 The Client can then derive a key-encryption-key:
 
 $$
-kek = HKDF(Salt=d \parallel K_{pepper}, Data=pin)
+kek = KDF(Salt=d \parallel K_{pepper}, Data=pin)
 $$
 
 The Client discards $P$, $K_{pepper}$ and $kek$.
