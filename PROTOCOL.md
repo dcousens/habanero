@@ -95,6 +95,7 @@ $$
 
 The Client discards $P$, $K_{pepper}$ and $kek$.
 
+The comparison $K'_{verify} \ne K_{verify}$ should be executed in constant time.
 
 #### Rationale
 $I_{attempts}$ is revealed to the Client to enable expectation matching (notification of "N passphrase attempt(s)").
@@ -141,7 +142,7 @@ To prevent brute-force by social engineering, a $I_{attempts}$ value should neve
 
 If $d$ is compromised, $K_{pepper}$ cannot be retrieved without $pin$, providing the Attacker $I_{attempts}$ to guess $pin$ before denial of service.
 
-An Attacker could strategically limit themselves to $<5$ attempts, leaving the remaining attempts for the actual User.
+An Attacker could strategically limit themselves to $<5$ attempts, leaving any remaining attempts for the actual User.
 The Attacker could then wait until the Client successfully retrieves a $K_{pepper}$, resetting $I_{attempts}$, enabling the Attacker to continue brute-forcing online.
 This attack is ideally mitigated by a notification to the User of the mismatch in expectations for the $I_{attempts}$ value.
 
@@ -170,6 +171,19 @@ With database compromise, $I_{attempts}$ can be assumed as $0$ for any retrieval
 This is a catastrophic compromise.
 
 $pin$ can be trivially brute-forced off-line, $K_{pepper}$ derived, and then $kek$ derived.
+
+
+#### 7. Non constant-time comparison for $K_{verify}$
+> An Attacker takes advantage of the comparison $K'_{verify} \ne K_{verify}$ mistakenly leaking timing information.
+
+If an implementation leaks timing information about $K'_{verify}$, then $K_{verify}$ could potentially be derived in less than 256 attempts (32 bytes revealed).
+
+An Attacker would keep the $I$ value constant and vary $P$ until a valid $K_{verify}$ is derived; it can now reset $I_{attempts}$ on demand.
+
+As in [3.](#3-local-compromise), an Attacker would strategically limit themselves to $<5$ attempts, leaving any remaining attempts for the actual User to reset $I_{attempts}$ authentically to enable them to complete the search space.
+
+This is measureably less work than attempting every possible $pin$ online.
+Combined with a local compromise, $I_{attempts}$ can continuously be assumed to be $0$, enabling online brute-forcing of $pin$.
 
 
 ### Conclusions
