@@ -11,7 +11,7 @@ function deriveCommitment (e, I, P) {
   return { commitment, pepper }
 }
 
-function notarize (e, P) {
+function commit (e, P) {
   if (!crypto.isBufferN(e, 32)) throw new TypeError('Bad secret')
   if (!crypto.isBufferN(P, 32)) throw new TypeError('Bad hash')
 
@@ -19,7 +19,7 @@ function notarize (e, P) {
   return deriveCommitment(e, I, P)
 }
 
-function respond (e, _commitment, P, queryCb, limitCb, callback, limit) {
+function get (e, _commitment, P, queryCb, limitCb, callback, limit) {
   if (!crypto.isBufferN(e, 32)) throw new TypeError('Bad secret')
   if (!crypto.isBufferN(_commitment, 64)) throw new TypeError('Bad commitment')
   if (!crypto.isBufferN(P, 32)) throw new TypeError('Bad hash')
@@ -40,4 +40,4 @@ function respond (e, _commitment, P, queryCb, limitCb, callback, limit) {
   })
 }
 
-module.exports = { notarize, respond }
+module.exports = { commit, get }

@@ -27,7 +27,7 @@ This protocol assumes TLS for authentication, encryption and the prevention of r
 On the Server
 1. Select a random 32-byte sequence $e$
 
-### Notarization
+### Commitment
 On a Client (or Attacking) device
 1. Select a random $pin$, where $pin \in \{x \in \Bbb Z \mid 0 \le x \le 9999\}$
 1. Select a random 32-byte sequence $d$
@@ -56,7 +56,7 @@ $d$ is a cryptographically random 256-bit Client secret for deriving $P$.
 $P$ is transmitted instead of $pin$ to prevent the Server from knowing $pin$.
 
 $I$ is a cryptographically random 256-bit identifier for authentication and attempt-limiting.
-$I$ is not provided by the Client to prevent Notarization from acting as a method of $K_{pepper}$ retrieval.
+$I$ is not provided by the Client to prevent Commitment from acting as a method of $K_{pepper}$ retrieval.
 $I$ is not derived from $P$ to prevent $I$ from acting as a cryptographic oracle enabling the online brute-force of $pin$.
 
 $K_{verify}$ is a hash commitment to $I \parallel P$ by the Server, for $P$ verification on $K_{pepper}$ retrieval.
@@ -112,7 +112,7 @@ The enforcement of whether a $pin$ is randomly selected is a UX consideration, a
 ## Attack Vectors
 Although this protocol assumes TLS, transport layer attacks are still explored below.
 
-#### 1. Transport compromise (Notarization)
+#### 1. Transport compromise (Commitment)
 > An Attacker captures $P$
 
 The Attacker cannot replay $P$ idempotently, as $K_{pepper}$ is derived from $I$, which is different each time.
@@ -121,18 +121,19 @@ The Attacker cannot replay $P$ idempotently, as $K_{pepper}$ is derived from $I$
 
 The Attacker can execute a denial-of-service attack via attempting (and failing) $K_{pepper}$ retrieval.
 
+This denial-of-service could be reset by external validation of the Clients identity.   To prevent brute-force via social engineering of the 3rd party, a $I_{attempts}$ value should never be reset twice.
+
 
 #### 2. Transport compromise (Retrieval)
 > An Attacker captures $I$, $P$ and $K_{verify}$
 
-If $P$ is notarized with $K_{verify}$, the Attacker can replay Retrieval to reveal $K_{pepper}$.
+If $K_{verify}$ is a legitimate commitment, and $P$ the pre-image for that commitment, the Attacker can replay this data by Retrieval to reveal $K_{pepper}$.
 
-If $P$ is not notarized, the Attacker can execute a denial-of-service attack by varying $P$.
+Otherwise, the Attacker can only execute a denial-of-service attack by varying $P$ or $K_{verify}$.
 
 > An Attacker captures $K'_{pepper}$ and $I_{attempts}$ to Client
 
-This denial-of-service could be reset by external validation of the Clients identity.
-To prevent brute-force by social engineering, a $I_{attempts}$ value should never be reset twice.
+This is NOT a catastrophic compromise without Local compromise.
 
 
 #### 3. Local compromise
@@ -150,9 +151,9 @@ This attack is ideally mitigated by a notification to the User of the mismatch i
 
 This is a catastrophic compromise.
 
-If an Attacker has $d$ and $K_{pepper}$, $kek$ can be derived.
+If an Attacker has $d$ and $K_{pepper}$, $pin$ can be trivially brute-forced off-line (provided a local validation oracle exists, e.g data encrypted with $kek$).
 
-If an Attacker has $d$, $I$, $K_{verify}$ and $P$, $pin$ can be trivially brute-forced off-line, $K_{pepper}$ retrieved, and then $kek$ derived.
+If an Attacker has $d$, $I$, $K_{verify}$ and $P$, $pin$ can be trivially brute-forced off-line using $P$ as a validation oracle.
 
 
 #### 5. Server compromise
@@ -190,6 +191,6 @@ If both the Server and Client is compromised, it can be assumed that the Client'
 If the Client, and the Client's connection is compromised, and $P$ or $K_{pepper}$ captured, it can be assumed that the Client's data has been trivially, and catastrophically decrypted off-line.
 
 If the Client is compromised, the Client has approximately a $0.05\%$ probability of catastrophic loss, depending on the strength and randomness of $pin$.
-Although compromised, the Client could safely copy $d$, $K_{verify}$ and then re-enter $pin$ on a non-compromised device, if necessary. Re-notarization is strongly recommended in this event.
+Although compromised, the Client could safely copy $d$, $K_{verify}$ and then re-enter $pin$ on a non-compromised device, if necessary. Re-commitment is strongly recommended in this event.
 
 If the Server is compromised, the Client cannot suffer a catastrophic decryption without local compromise.

@@ -34,13 +34,13 @@ tape.test('protocol is OK', (t) => {
   let e = randombytes(32)
   let seed = randombytes(32)
 
-  // notarization
+  // commitment
   let P1 = user.prepare(seed, '1234')
-  let { commitment, pepper: pepper1 } = server.notarize(e, P1)
+  let { commitment, pepper: pepper1 } = server.commit(e, P1)
 
   // request/respond
   let P2 = user.prepare(seed, '1234')
-  server.respond(e, commitment, P2, db.query, db.limit, (err, result) => {
+  server.get(e, commitment, P2, db.query, db.limit, (err, result) => {
     t.ifErr(err)
     t.ok(result)
     t.equal(db._count(), 0)
@@ -58,9 +58,9 @@ tape.test('protocol limits attackers', (t) => {
   let e = randombytes(32)
   let seed = randombytes(32)
 
-  // notarization
+  // commitment
   let P = user.prepare(seed, '1234')
-  let { commitment } = server.notarize(e, P)
+  let { commitment } = server.commit(e, P)
 
   // request/respond
   let I = commitment.slice(0, 32)
@@ -72,7 +72,7 @@ tape.test('protocol limits attackers', (t) => {
 
     t.equal(Math.min(i, 6), limit)
 
-    server.respond(e, commitment, aP, db.query, db.limit, (err, result) => {
+    server.get(e, commitment, aP, db.query, db.limit, (err, result) => {
       t.ifErr(err)
       t.equal(db._count(), 1)
       t.equal(db._limitOf(I), Math.min(i + 1, 6))
@@ -82,7 +82,7 @@ tape.test('protocol limits attackers', (t) => {
   }
 
   // denial of service, even with a valid commitment
-  server.respond(e, commitment, P, db.query, db.limit, (err, result) => {
+  server.get(e, commitment, P, db.query, db.limit, (err, result) => {
     t.ifErr(err)
     t.equal(db._count(), 1)
     t.equal(db._limitOf(I), 6)
@@ -96,25 +96,25 @@ tape.test('protocol limits attackers, but resets on success', (t) => {
   let e = randombytes(32)
   let seed = randombytes(32)
 
-  // notarization
+  // commitment
   let P = user.prepare(seed, '1234')
-  let { commitment, pepper: pepper1 } = server.notarize(e, P)
+  let { commitment, pepper: pepper1 } = server.commit(e, P)
 
   // attack
   let I = commitment.slice(0, 32)
   let aP = user.prepare(seed, '0099') // attacker
   t.equal(db._count(), 0)
   t.equal(db._limitOf(I), undefined)
-  server.respond(e, commitment, aP, db.query, db.limit, () => {})
-  server.respond(e, commitment, aP, db.query, db.limit, () => {})
-  server.respond(e, commitment, aP, db.query, db.limit, () => {})
-  server.respond(e, commitment, aP, db.query, db.limit, () => {})
-  server.respond(e, commitment, aP, db.query, db.limit, () => {})
+  server.get(e, commitment, aP, db.query, db.limit, () => {})
+  server.get(e, commitment, aP, db.query, db.limit, () => {})
+  server.get(e, commitment, aP, db.query, db.limit, () => {})
+  server.get(e, commitment, aP, db.query, db.limit, () => {})
+  server.get(e, commitment, aP, db.query, db.limit, () => {})
   t.equal(db._count(I), 1)
   t.equal(db._limitOf(I), 5)
 
   // !(attempts > 5), therefore valid commitment resets
-  server.respond(e, commitment, P, db.query, db.limit, (err, result) => {
+  server.get(e, commitment, P, db.query, db.limit, (err, result) => {
     t.ifErr(err)
     t.equal(db._count(), 0)
     t.equal(db._limitOf(I), undefined)
@@ -126,12 +126,12 @@ tape.test('protocol limits attackers, but resets on success', (t) => {
   })
 })
 
-tape.test('notarize is not deterministic', (t) => {
+tape.test('commit is not deterministic', (t) => {
   let e = randombytes(32)
   let P = randombytes(32)
   let results = []
   for (let i = 0; i < 100; ++i) {
-    results.push(server.notarize(e, P))
+    results.push(server.commit(e, P))
   }
 
   // O(n^2)
