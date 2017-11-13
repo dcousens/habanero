@@ -103,8 +103,6 @@ In typical application usage, $d$ is never shared; therefore a mismatch of expec
 
 $I_{attempts}$ values should be indexed by $H(I)$, where $H$ is a cryptographic hash function, to prevent any timing attacks that may reveal indexed $I$ values.
 
-[Limit I](######Limit_I) is to be enforced __before__ [Verify P](######Verify_P), otherwise Denial timings can be used as an oracle for $K_{verify}$ authenticity.
-
 The $I_{attempts}$ limit of $5$ was selected as it provides an approximate ~$0.05\%$ probability of success for an Attacker when using a 4-digit $pin$.
 
 However, if $pin$ distribution is not uniform, [DataGenetics](http://www.datagenetics.com/blog/september32012/) shows that $20.552\%$ of $pin$ codes are typically guessed in 5 attempts.
@@ -176,9 +174,9 @@ $pin$ can be trivially brute-forced off-line, $K_{pepper}$ derived, and then $ke
 #### 7. Non constant-time comparison for $K_{verify}$
 > An Attacker takes advantage of the comparison $K'_{verify} \ne K_{verify}$ mistakenly leaking timing information.
 
-If an implementation leaks timing information about $K'_{verify}$, then $K_{verify}$ could potentially be derived in less than 256 attempts (32 bytes revealed).
+If an implementation leaks timing information about $K'_{verify} \ne K_{verify}$, then $K'_{verify}$ could theoretically be revealed in less than 256 attempts.
 
-An Attacker would keep the $I$ value constant and vary $P$ until a valid $K_{verify}$ is derived; it can now reset $I_{attempts}$ on demand.
+An Attacker would keep the $I$ and $P$ values constant, varying the Attacker provided $K_{verify}$ until it equates the remotely computed $K'_{verify}$.  With a valid $K_{verify}$,  the Attacker can now reset $I_{attempts}$ on demand.
 
 As in [3.](#3-local-compromise), an Attacker would strategically limit themselves to $<5$ attempts, leaving any remaining attempts for the actual User to reset $I_{attempts}$ authentically to enable them to complete the search space.
 
