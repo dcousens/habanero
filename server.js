@@ -1,4 +1,5 @@
 let crypto = require('./crypto')
+let ncrypto = require('crypto')
 let randombytes = require('randombytes')
 
 function deriveCommitment (e, I, P) {
@@ -31,7 +32,9 @@ function respond (e, _commitment, P, queryCb, limitCb, callback, limit) {
     if (attempts > limit) return callback()
 
     let { commitment, pepper } = deriveCommitment(e, I, P)
-    if (!commitment.equals(_commitment)) return limitCb(I, attempts + 1, callback)
+    if (!ncrypto.timingSafeEqual(commitment, _commitment)) {
+      return limitCb(I, attempts + 1, callback)
+    }
 
     limitCb(I, 0, () => callback(null, { attempts, pepper }))
   })
