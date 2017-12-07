@@ -68,15 +68,21 @@ tape.test('protocol limits attackers', (t) => {
   t.equal(db._count(), 0)
   for (let i = 0; i < 10; ++i) {
     let aP = user.prepare(seed, '001' + i)
-    let limit = db._limitOf(I) || 0
 
-    t.equal(Math.min(i, 6), limit)
+    if (i < 5) {
+      t.equal(db._limitOf(I) || 0, i, 'limit matches i')
+    } else {
+      t.equal(db._limitOf(I), 5, 'limit reached, matches limit')
+    }
 
     server.get(e, commitment, aP, db.query, db.limit, (err, result) => {
       t.ifErr(err)
       t.equal(db._count(), 1)
-      t.equal(db._limitOf(I), Math.min(i + 1, 6))
-      t.equal(db._limitOf(I), Math.min(limit + 1, 6))
+      if (i < 5) {
+        t.equal(db._limitOf(I), i + 1, 'limit incremented')
+      } else {
+        t.equal(db._limitOf(I), 5, 'limit reached')
+      }
       t.notOk(result)
     })
   }
@@ -85,7 +91,7 @@ tape.test('protocol limits attackers', (t) => {
   server.get(e, commitment, P, db.query, db.limit, (err, result) => {
     t.ifErr(err)
     t.equal(db._count(), 1)
-    t.equal(db._limitOf(I), 6)
+    t.equal(db._limitOf(I), 5)
     t.notOk(result)
     t.end()
   })
@@ -109,9 +115,8 @@ tape.test('protocol limits attackers, but resets on success', (t) => {
   server.get(e, commitment, aP, db.query, db.limit, () => {})
   server.get(e, commitment, aP, db.query, db.limit, () => {})
   server.get(e, commitment, aP, db.query, db.limit, () => {})
-  server.get(e, commitment, aP, db.query, db.limit, () => {})
   t.equal(db._count(I), 1)
-  t.equal(db._limitOf(I), 5)
+  t.equal(db._limitOf(I), 4)
 
   // !(attempts > 5), therefore valid commitment resets
   server.get(e, commitment, P, db.query, db.limit, (err, result) => {
@@ -119,7 +124,7 @@ tape.test('protocol limits attackers, but resets on success', (t) => {
     t.equal(db._count(), 0)
     t.equal(db._limitOf(I), undefined)
     t.same(result, {
-      attempts: 5,
+      attempts: 4,
       pepper: pepper1
     })
     t.end()

@@ -74,7 +74,7 @@ On a Client (or Attacking) device
 On the Server
 
 ###### Limit I
-1. If $I \in attempted$, and $I_{attempts} \gt 5$, reject
+1. If $I \in attempted$, and $I_{attempts} \gte 5$, reject
 
 ###### Verify P
 1. $K' = HMAC_{SHA512}(Key=e, Data=I \parallel P)$
