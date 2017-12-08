@@ -19,6 +19,10 @@ function commit (e, P) {
   return deriveCommitment(e, I, P)
 }
 
+function hash (I) {
+  return ncrypto.createHash('sha256').update(I).digest()
+}
+
 function get (e, _commitment, P, queryCb, limitCb, callback, limit) {
   if (!crypto.isBufferN(e, 32)) throw new TypeError('Bad secret')
   if (!crypto.isBufferN(_commitment, 64)) throw new TypeError('Bad commitment')
@@ -26,17 +30,19 @@ function get (e, _commitment, P, queryCb, limitCb, callback, limit) {
   limit = limit || 5
 
   let I = _commitment.slice(0, 32)
+  let hI = hash(I)
 
-  queryCb(I, (err, attempts) => {
+  queryCb(hI, (err, attempts) => {
     if (err) return callback(err)
     if (attempts >= limit) return callback(null, { limited: true })
 
     let { commitment, pepper } = deriveCommitment(e, I, P)
     if (!ncrypto.timingSafeEqual(commitment, _commitment)) {
-      return limitCb(I, attempts + 1, (err) => callback(err, !err && { attempts, limited: false }))
+      ++attempts
+      return limitCb(hI, attempts, (err) => callback(err, !err && { attempts, limited: false }))
     }
 
-    limitCb(I, 0, () => callback(null, { attempts, pepper }))
+    limitCb(hI, 0, () => callback(null, { attempts, pepper }))
   })
 }
 

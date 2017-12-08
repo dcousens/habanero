@@ -1,31 +1,29 @@
 let user = require('../')
 let server = require('../server')
 
-let crypto = require('../crypto')
+let ncrypto = require('crypto')
 let randombytes = require('randombytes')
 let tape = require('tape')
 
 function memdb () {
   let memory = {}
-  function _h (I) {
-    return crypto.hmac256('mem', I).toString('hex')
-  }
-  function query (I, callback) {
-    let Ih = _h(I)
-    if (Ih in memory) return callback(null, memory[Ih])
+  function query (hI, callback) {
+    if (hI in memory) return callback(null, memory[hI])
     callback(null, 0)
   }
-  function limit (I, limit, callback) {
-    let Ih = _h(I)
+  function limit (hI, limit, callback) {
     if (limit === 0) {
-      delete memory[Ih]
+      delete memory[hI]
     } else {
-      memory[Ih] = limit
+      memory[hI] = limit
     }
     callback()
   }
   function _count () { return Object.keys(memory).length }
-  function _limitOf (I) { return memory[_h(I)] }
+  function _limitOf (I) {
+    let hI = ncrypto.createHash('sha256').update(I).digest()
+    return memory[hI]
+  }
   return { query, limit, _count, _limitOf }
 }
 
@@ -80,10 +78,14 @@ tape.test('protocol limits attackers', (t) => {
       t.equal(db._count(), 1)
       if (i < 5) {
         t.equal(db._limitOf(I), i + 1, 'limit incremented')
+        t.same(result, {
+          attempts: i + 1,
+          limited: false
+        })
       } else {
         t.equal(db._limitOf(I), 5, 'limit reached')
+        t.same(result, { limited: true })
       }
-      t.notOk(result)
     })
   }
 
@@ -92,7 +94,7 @@ tape.test('protocol limits attackers', (t) => {
     t.ifErr(err)
     t.equal(db._count(), 1)
     t.equal(db._limitOf(I), 5)
-    t.notOk(result)
+    t.same(result, { limited: true })
     t.end()
   })
 })
@@ -131,27 +133,27 @@ tape.test('protocol limits attackers, but resets on success', (t) => {
   })
 })
 
-tape.test('commit is not deterministic', (t) => {
+tape.test('commit is non deterministic', (t) => {
   let e = randombytes(32)
   let P = randombytes(32)
-  let results = []
-  for (let i = 0; i < 100; ++i) {
-    results.push(server.commit(e, P))
+
+  let history = {}
+  for (let i = 0; i < 500; ++i) {
+    let { commitment, pepper } = server.commit(e, P)
+    let I = commitment.slice(0, 32).toString('hex')
+    let verify = commitment.slice(32).toString('hex')
+    commitment = commitment.toString('hex')
+    pepper = pepper.toString('hex')
+
+    t.notOk(history[I], 'I is unique')
+    t.notOk(history[verify], 'verify is unique')
+    t.notOk(history[commitment], 'commitment is unique')
+    t.notOk(history[pepper], 'pepper is unique')
+    history[I] = true
+    history[verify] = true
+    history[commitment] = true
+    history[pepper] = true
   }
-
-  // O(n^2)
-  results.forEach((x, i) => {
-    results.forEach((y, j) => {
-      if (i === j) return
-
-      t.notSame(x.commitment, y.commitment)
-      t.notSame(x.pepper, y.pepper)
-
-      // deeper introspection of I/verify values
-      t.notSame(x.commitment.slice(0, 32), y.commitment.slice(0, 32))
-      t.notSame(x.commitment.slice(32), y.commitment.slice(32))
-    })
-  })
 
   t.end()
 })
