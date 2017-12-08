@@ -29,11 +29,11 @@ function get (e, _commitment, P, queryCb, limitCb, callback, limit) {
 
   queryCb(I, (err, attempts) => {
     if (err) return callback(err)
-    if (attempts >= limit) return callback()
+    if (attempts >= limit) return callback(null, { limited: true })
 
     let { commitment, pepper } = deriveCommitment(e, I, P)
     if (!ncrypto.timingSafeEqual(commitment, _commitment)) {
-      return limitCb(I, attempts + 1, callback)
+      return limitCb(I, attempts + 1, (err) => callback(err, !err && { attempts, limited: false }))
     }
 
     limitCb(I, 0, () => callback(null, { attempts, pepper }))
