@@ -4,6 +4,8 @@
 
 An attempt-limiting, remote pepper provisioning protocol with a bundled Javascript implementation.
 
+### WARNING: This protocol has not been peer reviewed - use at your own risk.
+
 
 ## [Protocol](PROTOCOL.md)
 
