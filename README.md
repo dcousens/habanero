@@ -2,7 +2,7 @@
 [![build status](https://secure.travis-ci.org/dcousens/habanero.png)](http://travis-ci.org/dcousens/habanero)
 [![NPM](https://img.shields.io/npm/v/habanero.svg)](https://www.npmjs.org/package/habanero)
 
-An attempt-limiting, remote pepper provisioning protocol with a bundled Javascript implementation.
+An experimental attempt-limiting, remote pepper provisioning protocol with a bundled Javascript implementation.
 
 ### WARNING: This protocol has not been peer reviewed - use at your own risk.
 
@@ -27,4 +27,4 @@ hb.get(e, commitment, P, queryCb, limitCb, (err, result) => {
 })
 ```
 
-## LICENSE [LGPLv3](LICENSE)
+## LICENSE [MIT](LICENSE)
