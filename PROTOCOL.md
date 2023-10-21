@@ -2,15 +2,15 @@
 Habanero is an attempt-limiting, remote pepper provisioning protocol for users who want to limit the amount of explorable key space by an Attacker.
 
 ## Summary
-If a User has encrypted Bitcoin on their Laptop, and their Laptop is compromised, typically an Attacker could copy the encrypted data and begin a brute-force attack against the Users passphrase.
-Typically this is partially mitigated by either a high-entropy passphrase, or a cryptographic key-deriviation-function (KDF) with a high work-factor.
+If a User has encrypted data on their Laptop, and their Laptop is compromised, typically an Attacker could copy the encrypted data and begin a brute-force attack against the passphrase or encryption key.
+Typically this is partially mitigated by either a high-entropy key, or through the use of a cryptographic key derivation function (KDF) with a high work-factor.
 
-For Users who use low-entropy passphrases, the result is near-immediate decryption of their encrypted data and catastrophic loss of their Bitcoin.
+For Users who use low-entropy passphrases, the result is near-immediate decryption of their encrypted data.
 
-With Habanero, an Attacker would instead be limited to trying only 5 passphrase guesses before being remotely 'locked out' of decrypting the file.
+With Habanero, an Attacker would instead be limited to trying only 5 passphrase guesses before being remotely 'locked out' of decrypting the data.
 
 Habanero uses a deterministic [cryptographic pepper](https://en.wikipedia.org/wiki/Pepper_(cryptography)) for each passphrase, retrieved remotely from a 3rd party whom you trust to safely track the number of attempts tried.
-The 3rd party does *not* need to maintain a 'registry' of Users, and can maintain minimal operating state of only the failed attempts.
+The trusted 3rd party can maintain a minimal state of only tracking failed attempts.
 
 For a low-entropy passphrase, such as a 4 digit PIN, this can be a highly effective method of minimizing the risk of catastrophic decryption by an Attacker,  with a decryption probability of only 0.05% (using a limit of maximum 5 guesses).
 Increasing the entropy of the passphrase directly decreases the probability of catastrophic decryption.
